@@ -14,3 +14,19 @@ print(df.to_string())
 
 sns.heatmap(df.iloc[:,1:].corr(), annot=True)
 plt.show()
+
+sns.histplot(df.cena)
+plt.savefig('plik.png')
+plt.show()
+
+plt.scatter(df.powierzchnia, df.cena)
+plt.show()
+
+sns.scatterplot(data=df, x='powierzchnia', y='cena')
+plt.show()
+
+X = df.iloc[:,2:]
+y = df.cena
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+print(X_train)
