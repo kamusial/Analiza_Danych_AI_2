@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy.stats import norm, ttest_ind, f_oneway
+from scipy.stats import norm, ttest_ind, f_oneway, chi2_contingency
 import warnings
 
 # warnings.filterwarnings('ignore')   # nie pokazuj ostrzeżeń
@@ -74,6 +74,36 @@ if 'plec' in data.columns:
     # ANOVA - porównanie zarobków między różnymi poziomami wyksztacenia
 if 'wyksztalcenie' in data.columns:
     groups = []
-    for poziom in data['wyksztalcenie'].unique():  # 'podstawowe', 'średnie', 'wyższe'
+    for poziom in data['wyksztalcenie'].unique():
         groups.append(data[data['wyksztalcenie'] == poziom]['zarobki'])
-        f_stat, p_value = f_oneway(*groups)
+
+    f_stat, p_value = f_oneway(*groups)
+    print(f"\nANOVA dla zarobków między różnymi poziomami wykształcenia:")
+    print(f"Statystyka F: {f_stat:.4f}, p-value: {p_value:.4f}")
+    # Interpretacja wyniku
+    alpha = 0.05
+    if p_value < alpha:
+        print('Istnieje statystycznie znacząca różnica w zarobkach między poziomami wykształcenia')
+    else:
+        print('Nie ma statystycznie znaczącejróżnicy w zarobkach między poziomami wykształcenia')
+
+# testy parami, ręczna implementacja
+# from itertools import combinations
+
+# Test chi-kwadrat - zależność między płcią, a wykształceniem
+if 'plec' in data.columns and 'wyksztalcenie' in data.columns:
+    cross_tab = pd.crosstab(data['plec'], data['wyksztalcenie'])
+    f_stat, p_value, dof, expected = chi2_contingency(cross_tab)
+    print(f'n\Test chi-kwadrat dla zależności między płcią, a wykształceniem')
+    print(f'Statystyka: {f_stat:.4f}, p-value: {p_value:.4f}, stopnie swobody: {dof}')
+    print('\nTabela krzyżowa:')
+    print(cross_tab)
+
+    # Interpretacja wyniku
+    alpha = 0.05
+    if p_value < alpha:
+        print("Istnieje statystycznie znacząca zależność między płcią a wykształceniem.")
+    else:
+        print("Nie ma statystycznie znaczącej zależności między płcią a wykształceniem.")
+
+
