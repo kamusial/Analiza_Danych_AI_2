@@ -44,3 +44,15 @@ print(data.head().to_string())
 print("\n2. Statystyka opisowa...")
 print("\nPodstawowe miary statystyczne:")
 print(data.describe())
+
+print("\nMacierz korelacji:")
+corr_matrix = data.select_dtypes(include=[np.number]).corr()
+print(corr_matrix)
+
+# Wizualizacja macierzy korelacji
+plt.figure()
+sns.heatmap(corr_matrix)
+plt.title('Macierz korelacji')
+plt.tight_layout()
+plt.savefig('macierz_korelacji.png')
+plt.close()
