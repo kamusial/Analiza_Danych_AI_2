@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy.stats import norm
+from scipy.stats import norm, ttest_ind, f_oneway
 import warnings
 
 # warnings.filterwarnings('ignore')   # nie pokazuj ostrzeżeń
@@ -20,7 +20,7 @@ try:
 except FileNotFoundError:
     print('Nie znaleziono pliku - generuję przykładowe dane')
     np.random.seed(42)
-    n = 200 # liczba obserwacji
+    n = 200  # liczba obserwacji
     # dane numeryczne: wiek, zarobki, wydatki, wzrost, waga - rozkład normalny
     data = pd.DataFrame({
         'wiek': np.random.normal(45, 15, n).astype(int),
@@ -29,7 +29,7 @@ except FileNotFoundError:
         'wzrost': np.random.normal(175, 10, n),
         'waga': np.random.normal(75, 15, n)
     })
-    #dane kategoryczne
+    # dane kategoryczne
     data['plec'] = np.random.choice(['K', 'M'], n)
     data['wyksztalcenie'] = np.random.choice(['podstawowe', 'średnie', 'wyższe'], n, p=[0.2, 0.5, 0.3])
     data['region'] = np.random.choice(['Północ', 'Południe', 'Wschód', 'Zachód'], n)
@@ -51,8 +51,29 @@ print(corr_matrix)
 
 # Wizualizacja macierzy korelacji
 plt.figure()
-sns.heatmap(corr_matrix)
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0, fmt='.2f')
 plt.title('Macierz korelacji')
 plt.tight_layout()
 plt.savefig('macierz_korelacji.png')
 plt.close()
+
+print('\n3. Testy statystyczne...')
+if 'plec' in data.columns:
+    zarobki_k = data[data['plec'] == 'K']['zarobki']
+    zarobki_m = data[data['plec'] == 'M']['zarobki']
+    t_stat, p_value = ttest_ind(zarobki_k, zarobki_m)
+    print(f'Test t-Studenta dla zarobków między K, a M')
+    print(f'Statystyka t: {t_stat:.4f}, p-value: {p_value:.4f}')
+    # intepretacja wyniku
+    alpha = 0.05
+    if p_value < alpha:
+        print('Istnieje statystycznie znacząca różnica w zarobkach, między K, a M')
+    else:
+        print('Nie ma statystycznie znaczącej różnicy w zarobkach między płciami')
+
+    # ANOVA - porównanie zarobków między różnymi poziomami wyksztacenia
+if 'wyksztalcenie' in data.columns:
+    groups = []
+    for poziom in data['wyksztalcenie'].unique():  # 'podstawowe', 'średnie', 'wyższe'
+        groups.append(data[data['wyksztalcenie'] == poziom]['zarobki'])
+        f_stat, p_value = f_oneway(*groups)

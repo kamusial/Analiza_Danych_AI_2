@@ -29,3 +29,15 @@ slownik_zakupow = {'marchew': 2, 'woda': 6, 'jajka': 12, 'woda': 2}
 print(slownik_zakupow)
 print(slownik_zakupow['jajka'])
 
+dane = ['student', 'uczen', 'bezrobotny', 'pracujacy', 'bezrobotny_student']
+
+for status in dane:
+    print(f'typ czlowieka: {status}')
+    if status == 'uczen' or status == 'student':
+        print('ok')
+
+cars = ['bmw', 'volvo','dacia', 'ford', 'citroen']
+for car in cars:
+    print(f'Sprawdzam, czy marka: {car} jest w bazie')
+
+
